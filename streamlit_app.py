@@ -90,18 +90,21 @@ def calculate_volume_overlap_error(file_path1, file_path2):
 
     return dice, jaccard, voe, data1, data2
 
-def visualize_overlap(data1, data2):
+def visualize_overlap(data1, data2, view):
     """Visualizes the overlap of two NIfTI images in 3D."""
-    x, y, z = np.nonzero(data1)
-    fig = go.Figure(data=[
-        go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='blue'), name='Image 1')
-    ])
+    fig = go.Figure()
 
-    x, y, z = np.nonzero(data2)
-    fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='red'), name='Image 2'))
+    if view in ['Image 1', 'All']:
+        x, y, z = np.nonzero(data1)
+        fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='blue'), name='Image 1'))
 
-    x, y, z = np.nonzero(np.logical_and(data1, data2))
-    fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='green'), name='Intersection'))
+    if view in ['Image 2', 'All']:
+        x, y, z = np.nonzero(data2)
+        fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='red'), name='Image 2'))
+
+    if view in ['Intersection', 'All']:
+        x, y, z = np.nonzero(np.logical_and(data1, data2))
+        fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='green'), name='Intersection'))
 
     fig.update_layout(scene=dict(
         xaxis_title='X',
@@ -134,8 +137,10 @@ if uploaded_file1 and uploaded_file2:
             st.write(f"Jaccard index: {jaccard:.4f}")
             st.write(f"Volume overlap error: {voe:.4f}")
 
-            fig = visualize_overlap(data1, data2)
+            view = st.radio("Select view", ("Image 1", "Image 2", "Intersection", "All"))
+            fig = visualize_overlap(data1, data2, view)
             st.plotly_chart(fig)
 
     except ValueError as e:
         st.error(e)
+
