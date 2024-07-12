@@ -183,13 +183,13 @@ def visualize_overlap(data1, data2, view):
     """Visualizes the overlap of two NIfTI images in 3D."""
     fig = go.Figure()
 
-    if view in ['Image 1', 'All']:
+    if view in ['Label', 'All']:
         x, y, z = np.nonzero(data1)
-        fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='blue'), name='Image 1'))
+        fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='blue'), name='Label'))
 
-    if view in ['Image 2', 'All']:
+    if view in ['Predicted Label', 'All']:
         x, y, z = np.nonzero(data2)
-        fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='red'), name='Image 2'))
+        fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='red'), name='Predicted Label'))
 
     if view in ['Intersection', 'All']:
         x, y, z = np.nonzero(np.logical_and(data1, data2))
@@ -231,7 +231,7 @@ if uploaded_file1 and uploaded_file2:
             st.write(f"Volume overlap error: {voe:.4f}")
             st.write(f"Coverage: {coverage:.4f}")
 
-            view = st.radio("Select view", ("Image 1", "Image 2", "Intersection", "Difference", "All"))
+            view = st.radio("Select view", ("Label", "Predicted Label", "Intersection", "Difference", "All"))
             fig = visualize_overlap(data1, data2, view)
             st.plotly_chart(fig)
 
