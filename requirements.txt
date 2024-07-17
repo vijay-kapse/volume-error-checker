@@ -2,3 +2,4 @@ streamlit
 nibabel
 numpy
 plotly
+pynrrd
