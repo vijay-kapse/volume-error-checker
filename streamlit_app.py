@@ -145,132 +145,29 @@
 #         st.error(e)
 
 
-# import streamlit as st
-# import nibabel as nib
-# import numpy as np
-# import tempfile
-# import plotly.graph_objects as go
-
-# st.title("NIfTI Image Similarity Metrics")
-# st.write("This app calculates the Dice coefficient, Jaccard index, Volume Overlap Error (VOE), and Coverage between two NIfTI images and visualizes their overlap in 3D.")
-
-# # File uploaders
-# uploaded_file1 = st.file_uploader("Upload LABEL NIfTI image", type=".nii.gz")
-# uploaded_file2 = st.file_uploader("Upload PREDICTED LABEL NIfTI image", type=".nii.gz")
-
-# def calculate_metrics(file_path1, file_path2):
-#     """Calculates metrics between two NIfTI images."""
-#     img1 = nib.load(file_path1)
-#     img2 = nib.load(file_path2)
-
-#     data1 = img1.get_fdata() > 0
-#     data2 = img2.get_fdata() > 0
-
-#     if data1.shape != data2.shape:
-#         raise ValueError("NIfTI images have different dimensions!")
-
-#     intersection = np.logical_and(data1, data2).sum()
-#     union = np.logical_or(data1, data2).sum()
-
-#     dice = (2.0 * intersection) / (data1.sum() + data2.sum())
-#     jaccard = intersection / union
-#     voe = 1 - dice
-#     coverage = intersection / data1.sum()
-
-#     return dice, jaccard, voe, coverage, data1, data2
-
-# def visualize_overlap(data1, data2, view):
-#     """Visualizes the overlap of two NIfTI images in 3D."""
-#     fig = go.Figure()
-
-#     if view in ['Label', 'All']:
-#         x, y, z = np.nonzero(data1)
-#         fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='blue'), name='Label'))
-
-#     if view in ['Predicted Label', 'All']:
-#         x, y, z = np.nonzero(data2)
-#         fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='red'), name='Predicted Label'))
-
-#     if view in ['Intersection', 'All']:
-#         x, y, z = np.nonzero(np.logical_and(data1, data2))
-#         fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='green'), name='Intersection'))
-
-#     if view == 'Difference':
-#         x, y, z = np.nonzero(np.logical_and(data1, np.logical_not(data2)))
-#         fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='purple'), name='Difference'))
-
-#     fig.update_layout(scene=dict(
-#         xaxis_title='X',
-#         yaxis_title='Y',
-#         zaxis_title='Z'
-#     ))
-
-#     return fig
-
-# # Calculate and display metrics if both files are uploaded
-# if uploaded_file1 and uploaded_file2:
-#     try:
-#         # Create temporary files to store uploaded data
-#         with tempfile.NamedTemporaryFile(suffix=".nii.gz", delete=False) as temp_file1, \
-#              tempfile.NamedTemporaryFile(suffix=".nii.gz", delete=False) as temp_file2:
-
-#             # Write uploaded content to temporary files
-#             temp_file1.write(uploaded_file1.read())
-#             temp_file2.write(uploaded_file2.read())
-
-#             # Get temporary file paths
-#             temp_file_path1 = temp_file1.name
-#             temp_file_path2 = temp_file2.name
-
-#             # Now use the temporary file paths for calculation
-#             dice, jaccard, voe, coverage, data1, data2 = calculate_metrics(temp_file_path1, temp_file_path2)
-
-#             st.write("**Metrics:**")
-#             st.write(f"Dice coefficient: {dice:.4f}")
-#             st.write(f"Jaccard index: {jaccard:.4f}")
-#             st.write(f"Volume overlap error: {voe:.4f}")
-#             st.write(f"Coverage: {coverage:.4f}")
-
-#             view = st.radio("Select view", ("Label", "Predicted Label", "Intersection", "Difference", "All"))
-#             fig = visualize_overlap(data1, data2, view)
-#             st.plotly_chart(fig)
-
-#     except ValueError as e:
-#         st.error(e)
-
-
 import streamlit as st
 import nibabel as nib
-import nrrd
 import numpy as np
 import tempfile
 import plotly.graph_objects as go
 
-st.title("Image Similarity Metrics (NIfTI & NRRD)")
-st.write("This app calculates the Dice coefficient, Jaccard index, Volume Overlap Error (VOE), and Coverage between two images (NIfTI or NRRD) and visualizes their overlap in 3D.")
+st.title("NIfTI Image Similarity Metrics")
+st.write("This app calculates the Dice coefficient, Jaccard index, Volume Overlap Error (VOE), and Coverage between two NIfTI images and visualizes their overlap in 3D.")
 
 # File uploaders
-uploaded_file1 = st.file_uploader("Upload LABEL image", type=["nii", "nii.gz", "nrrd"])
-uploaded_file2 = st.file_uploader("Upload PREDICTED LABEL image", type=["nii", "nii.gz", "nrrd"])
+uploaded_file1 = st.file_uploader("Upload LABEL NIfTI image", type=".nii.gz")
+uploaded_file2 = st.file_uploader("Upload PREDICTED LABEL NIfTI image", type=".nii.gz")
 
-def load_image(file_path):
-    """Loads an image file and returns the data."""
-    if file_path.endswith(".nii") or file_path.endswith(".nii.gz"):
-        img = nib.load(file_path)
-        data = img.get_fdata()
-    elif file_path.endswith(".nrrd"):
-        data, _ = nrrd.read(file_path)
-    else:
-        raise ValueError("Unsupported file format!")
-    return data
+def calculate_metrics(file_path1, file_path2):
+    """Calculates metrics between two NIfTI images."""
+    img1 = nib.load(file_path1)
+    img2 = nib.load(file_path2)
 
-def calculate_metrics(data1, data2):
-    """Calculates metrics between two images."""
-    data1 = data1 > 0
-    data2 = data2 > 0
+    data1 = img1.get_fdata() > 0
+    data2 = img2.get_fdata() > 0
 
     if data1.shape != data2.shape:
-        raise ValueError("Images have different dimensions!")
+        raise ValueError("NIfTI images have different dimensions!")
 
     intersection = np.logical_and(data1, data2).sum()
     union = np.logical_or(data1, data2).sum()
@@ -283,7 +180,7 @@ def calculate_metrics(data1, data2):
     return dice, jaccard, voe, coverage, data1, data2
 
 def visualize_overlap(data1, data2, view):
-    """Visualizes the overlap of two images in 3D."""
+    """Visualizes the overlap of two NIfTI images in 3D."""
     fig = go.Figure()
 
     if view in ['Label', 'All']:
@@ -314,8 +211,8 @@ def visualize_overlap(data1, data2, view):
 if uploaded_file1 and uploaded_file2:
     try:
         # Create temporary files to store uploaded data
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file1, \
-             tempfile.NamedTemporaryFile(delete=False) as temp_file2:
+        with tempfile.NamedTemporaryFile(suffix=".nii.gz", delete=False) as temp_file1, \
+             tempfile.NamedTemporaryFile(suffix=".nii.gz", delete=False) as temp_file2:
 
             # Write uploaded content to temporary files
             temp_file1.write(uploaded_file1.read())
@@ -325,12 +222,8 @@ if uploaded_file1 and uploaded_file2:
             temp_file_path1 = temp_file1.name
             temp_file_path2 = temp_file2.name
 
-            # Load images
-            data1 = load_image(temp_file_path1)
-            data2 = load_image(temp_file_path2)
-
-            # Calculate metrics
-            dice, jaccard, voe, coverage, data1, data2 = calculate_metrics(data1, data2)
+            # Now use the temporary file paths for calculation
+            dice, jaccard, voe, coverage, data1, data2 = calculate_metrics(temp_file_path1, temp_file_path2)
 
             st.write("**Metrics:**")
             st.write(f"Dice coefficient: {dice:.4f}")
@@ -344,5 +237,112 @@ if uploaded_file1 and uploaded_file2:
 
     except ValueError as e:
         st.error(e)
+
+
+# import streamlit as st
+# import nibabel as nib
+# import nrrd
+# import numpy as np
+# import tempfile
+# import plotly.graph_objects as go
+
+# st.title("Image Similarity Metrics (NIfTI & NRRD)")
+# st.write("This app calculates the Dice coefficient, Jaccard index, Volume Overlap Error (VOE), and Coverage between two images (NIfTI or NRRD) and visualizes their overlap in 3D.")
+
+# # File uploaders
+# uploaded_file1 = st.file_uploader("Upload LABEL image", type=["nii", "nii.gz", "nrrd"])
+# uploaded_file2 = st.file_uploader("Upload PREDICTED LABEL image", type=["nii", "nii.gz", "nrrd"])
+
+# def load_image(file_path):
+#     """Loads an image file and returns the data."""
+#     if file_path.endswith(".nii") or file_path.endswith(".nii.gz"):
+#         img = nib.load(file_path)
+#         data = img.get_fdata()
+#     elif file_path.endswith(".nrrd"):
+#         data, _ = nrrd.read(file_path)
+#     else:
+#         raise ValueError("Unsupported file format!")
+#     return data
+
+# def calculate_metrics(data1, data2):
+#     """Calculates metrics between two images."""
+#     data1 = data1 > 0
+#     data2 = data2 > 0
+
+#     if data1.shape != data2.shape:
+#         raise ValueError("Images have different dimensions!")
+
+#     intersection = np.logical_and(data1, data2).sum()
+#     union = np.logical_or(data1, data2).sum()
+
+#     dice = (2.0 * intersection) / (data1.sum() + data2.sum())
+#     jaccard = intersection / union
+#     voe = 1 - dice
+#     coverage = intersection / data1.sum()
+
+#     return dice, jaccard, voe, coverage, data1, data2
+
+# def visualize_overlap(data1, data2, view):
+#     """Visualizes the overlap of two images in 3D."""
+#     fig = go.Figure()
+
+#     if view in ['Label', 'All']:
+#         x, y, z = np.nonzero(data1)
+#         fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='blue'), name='Label'))
+
+#     if view in ['Predicted Label', 'All']:
+#         x, y, z = np.nonzero(data2)
+#         fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='red'), name='Predicted Label'))
+
+#     if view in ['Intersection', 'All']:
+#         x, y, z = np.nonzero(np.logical_and(data1, data2))
+#         fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='green'), name='Intersection'))
+
+#     if view == 'Difference':
+#         x, y, z = np.nonzero(np.logical_and(data1, np.logical_not(data2)))
+#         fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(size=1, color='purple'), name='Difference'))
+
+#     fig.update_layout(scene=dict(
+#         xaxis_title='X',
+#         yaxis_title='Y',
+#         zaxis_title='Z'
+#     ))
+
+#     return fig
+
+# # Calculate and display metrics if both files are uploaded
+# if uploaded_file1 and uploaded_file2:
+#     try:
+#         # Create temporary files to store uploaded data
+#         with tempfile.NamedTemporaryFile(delete=False) as temp_file1, \
+#              tempfile.NamedTemporaryFile(delete=False) as temp_file2:
+
+#             # Write uploaded content to temporary files
+#             temp_file1.write(uploaded_file1.read())
+#             temp_file2.write(uploaded_file2.read())
+
+#             # Get temporary file paths
+#             temp_file_path1 = temp_file1.name
+#             temp_file_path2 = temp_file2.name
+
+#             # Load images
+#             data1 = load_image(temp_file_path1)
+#             data2 = load_image(temp_file_path2)
+
+#             # Calculate metrics
+#             dice, jaccard, voe, coverage, data1, data2 = calculate_metrics(data1, data2)
+
+#             st.write("**Metrics:**")
+#             st.write(f"Dice coefficient: {dice:.4f}")
+#             st.write(f"Jaccard index: {jaccard:.4f}")
+#             st.write(f"Volume overlap error: {voe:.4f}")
+#             st.write(f"Coverage: {coverage:.4f}")
+
+#             view = st.radio("Select view", ("Label", "Predicted Label", "Intersection", "Difference", "All"))
+#             fig = visualize_overlap(data1, data2, view)
+#             st.plotly_chart(fig)
+
+#     except ValueError as e:
+#         st.error(e)
 
 
