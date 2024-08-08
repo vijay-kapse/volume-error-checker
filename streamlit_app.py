@@ -155,8 +155,8 @@ st.title("NIfTI Image Similarity Metrics")
 st.write("This app calculates the Dice coefficient, Jaccard index, Volume Overlap Error (VOE), and Coverage between two NIfTI images and visualizes their overlap in 3D.")
 
 # File uploaders
-uploaded_file1 = st.file_uploader("Upload LABEL NIfTI image", type=[".nii.gz",".nii"])
-uploaded_file2 = st.file_uploader("Upload PREDICTED LABEL NIfTI image", type=[".nii.gz",".nii"])
+uploaded_file1 = st.file_uploader("Upload LABEL NIfTI image", type=[".nii", ".nii.gz"])
+uploaded_file2 = st.file_uploader("Upload PREDICTED LABEL NIfTI image", type=[".nii", ".nii.gz"])
 
 def calculate_metrics(file_path1, file_path2):
     """Calculates metrics between two NIfTI images."""
@@ -211,8 +211,8 @@ def visualize_overlap(data1, data2, view):
 if uploaded_file1 and uploaded_file2:
     try:
         # Create temporary files to store uploaded data
-        with tempfile.NamedTemporaryFile(suffix=".nii.gz", delete=False) as temp_file1, \
-             tempfile.NamedTemporaryFile(suffix=".nii.gz", delete=False) as temp_file2:
+        with tempfile.NamedTemporaryFile(suffix=".nii", delete=False) as temp_file1, \
+             tempfile.NamedTemporaryFile(suffix=".nii", delete=False) as temp_file2:
 
             # Write uploaded content to temporary files
             temp_file1.write(uploaded_file1.read())
@@ -237,6 +237,7 @@ if uploaded_file1 and uploaded_file2:
 
     except ValueError as e:
         st.error(e)
+
 
 
 # import streamlit as st
