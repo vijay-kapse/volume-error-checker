@@ -155,8 +155,8 @@ st.title("NIfTI Image Similarity Metrics")
 st.write("This app calculates the Dice coefficient, Jaccard index, Volume Overlap Error (VOE), and Coverage between two NIfTI images and visualizes their overlap in 3D.")
 
 # File uploaders
-uploaded_file1 = st.file_uploader("Upload LABEL NIfTI image", type=".nii.gz")
-uploaded_file2 = st.file_uploader("Upload PREDICTED LABEL NIfTI image", type=".nii.gz")
+uploaded_file1 = st.file_uploader("Upload LABEL NIfTI image", type=[".nii.gz",".nii"])
+uploaded_file2 = st.file_uploader("Upload PREDICTED LABEL NIfTI image", type=[".nii.gz",".nii"])
 
 def calculate_metrics(file_path1, file_path2):
     """Calculates metrics between two NIfTI images."""
