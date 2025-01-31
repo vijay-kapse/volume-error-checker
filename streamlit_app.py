@@ -2,7 +2,6 @@
 # import nibabel as nib
 # import numpy as np
 
-
 # import tempfile
 
 # st.title("NIfTI Image Similarity Metrics")
